@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}Overview{% endblock %}
+{% block content %}
+<h1>Overview</h1>
+<section class="kpis">
+  <div class="kpi"><span>Spend</span><b>${{ '{:,.0f}'.format(k.spend) }}</b></div>
+  <div class="kpi"><span>Revenue</span><b>${{ '{:,.0f}'.format(k.revenue) }}</b></div>
+  <div class="kpi"><span>CAC</span><b>${{ k.CAC }}</b></div>
+  <div class="kpi"><span>ROI</span><b>{{ k.ROI }}x</b></div>
+  <div class="kpi"><span>Click to lead</span><b>{{ '{:.1f}'.format(k.click_to_lead * 100) }}%</b></div>
+  <div class="kpi"><span>Lead to customer</span><b>{{ '{:.1f}'.format(k.lead_to_customer * 100) }}%</b></div>
+</section>
+<section class="grid">
+  <div class="panel"><h2>Spend vs revenue by month</h2><div class="chart"><canvas id="trend"></canvas></div></div>
+  <div class="panel"><h2>ROI by channel</h2><div class="chart"><canvas id="roi"></canvas></div></div>
+</section>
+{% endblock %}
+{% block scripts %}
+<script>
+const monthly = {{ monthly|tojson }}, channels = {{ channels|tojson }};
+lineChart('trend', monthly.map(m => m.month), [
+  {label: 'Revenue', data: monthly.map(m => m.revenue), color: '--accent'},
+  {label: 'Spend', data: monthly.map(m => m.spend), color: '--warn'}]);
+barChart('roi', channels.map(c => c.channel), channels.map(c => c.ROI), v => v.toFixed(1) + 'x');
+</script>
+{% endblock %}

@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Channels{% endblock %}
+{% block content %}
+<h1>Channels</h1>
+<section class="grid">
+  <div class="panel"><h2>CAC by channel ($)</h2><div class="chart"><canvas id="cac"></canvas></div></div>
+  <div class="panel"><h2>ROI by campaign type</h2><div class="chart"><canvas id="type"></canvas></div></div>
+</section>
+<section class="panel"><h2>Channel breakdown</h2>
+<div class="scroll"><table>
+  <thead><tr><th>Channel</th><th>Campaigns</th><th>Spend</th><th>Revenue</th><th>CAC</th><th>ROI</th><th>ROAS</th><th>Lead to customer</th></tr></thead>
+  <tbody>{% for c in channels %}
+    <tr><td>{{ c.channel }}</td><td>{{ c.campaigns }}</td><td>${{ '{:,.0f}'.format(c.spend) }}</td><td>${{ '{:,.0f}'.format(c.revenue) }}</td>
+    <td>${{ c.CAC }}</td><td>{{ c.ROI }}x</td><td>{{ c.ROAS }}x</td><td>{{ '{:.1f}'.format(c.lead_to_customer * 100) }}%</td></tr>
+  {% endfor %}</tbody>
+</table></div></section>
+{% endblock %}
+{% block scripts %}
+<script>
+const channels = {{ channels|tojson }}, types = {{ types|tojson }};
+const byCac = [...channels].sort((a, b) => a.CAC - b.CAC);
+barChart('cac', byCac.map(c => c.channel), byCac.map(c => c.CAC), v => '$' + v.toFixed(2));
+barChart('type', types.map(t => t.campaign_type), types.map(t => t.ROI), v => v.toFixed(1) + 'x');
+</script>
+{% endblock %}

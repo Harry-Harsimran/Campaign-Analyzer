@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Campaigns{% endblock %}
+{% block content %}
+<h1>Campaigns</h1>
+<form method="get">
+  <select name="channel"><option value="">All channels</option>
+    {% for c in channel_opts %}<option {{ 'selected' if c == channel }}>{{ c }}</option>{% endfor %}</select>
+  <select name="type"><option value="">All types</option>
+    {% for t in type_opts %}<option {{ 'selected' if t == ctype }}>{{ t }}</option>{% endfor %}</select>
+  <input type="hidden" name="sort" value="{{ sort }}">
+  <input type="hidden" name="dir" value="{{ 'desc' if desc else 'asc' }}">
+  <button>Apply</button>
+</form>
+<section class="panel"><div class="scroll"><table>
+  <thead><tr>
+  {% for key, label in [('campaign_id','Campaign'),('channel','Channel'),('campaign_type','Type'),('spend','Spend'),('revenue','Revenue'),('CAC','CAC'),('ROI','ROI'),('ROAS','ROAS'),('conv_rate','Lead to customer')] %}
+    <th><a href="{{ url_for('campaigns', channel=channel, type=ctype, sort=key, dir=('asc' if (sort == key and desc) else 'desc')) }}">{{ label }}{{ (' ▼' if desc else ' ▲') if sort == key }}</a></th>
+  {% endfor %}</tr></thead>
+  <tbody>{% for r in rows %}
+    <tr><td>{{ r.campaign_id }}</td><td>{{ r.channel }}</td><td>{{ r.campaign_type }}</td>
+    <td>${{ '{:,.0f}'.format(r.spend) }}</td><td>${{ '{:,.0f}'.format(r.revenue) }}</td><td>${{ r.CAC }}</td>
+    <td class="{{ 'neg' if r.ROI < 0 }}">{{ r.ROI }}x</td><td>{{ r.ROAS }}x</td><td>{{ '{:.1f}'.format(r.conv_rate * 100) }}%</td></tr>
+  {% endfor %}</tbody>
+</table></div></section>
+{% endblock %}

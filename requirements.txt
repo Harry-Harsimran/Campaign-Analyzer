@@ -1,0 +1,4 @@
+flask
+pandas
+pywebview
+pyinstaller
